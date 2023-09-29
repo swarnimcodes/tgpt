@@ -13,32 +13,37 @@ else:
 conversation = []
 
 def gptResponse(user_message):
-    response = ""
     response_dict = openai.ChatCompletion.create(
         model=MODEL,          
         messages = conversation,
-        temperature=2,
+        temperature=0.7,
+        max_tokens=100
     )
     
-    # Get the response that chat gpt gave us
-    response = response_dict['choices'][0]['message']['content']
 
-    return response
+    return response_dict
 
 
 while True:
-    user_message = input("You:\t")
     conversation.append({
         "role": "system",
         "content": "You are a helpful, humble expert."
     })
+    
+    user_message = input("You:\t")
     conversation.append({
         "role": "user",
         "content": user_message
     })
 
+    # response = response_dict['choices'][0]['message']['content']
     gpt_response = gptResponse(user_message)
-    conversation.append(gpt_response)
+    gpt_message = gpt_response['choices'][0]['message']['content']
+    conversation.append({
+        "role": "assistant",
+        "content": gpt_message
+    })
+    print(f"GPT:\t{gpt_message}")
 
     if user_message.lower() == "exit":
         break
